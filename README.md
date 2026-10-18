@@ -78,4 +78,5 @@ Un contenedor Docker comparte el kernel del sistema operativo anfitrión. A dife
 ## Entrega
 
 - **Repositorio público:** https://github.com/RutSanchez/analizador-representacion-datos-examen
-- **Video de demostración (máximo 2 minutos):** pendiente de agregar.
+- **Video de demostración (máximo 2 minutos):** https://drive.google.com/file/d/1in4JqEZ1b6xK-Rzw6g_Rn_qvZul5OER0/view?usp=sharing
+
