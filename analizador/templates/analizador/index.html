@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Analizador de representación de datos</title>
+    <style>
+        :root { --green: #08784f; --ink: #182b25; --muted: #61716a; --line: #dce7e1; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #f2f6f4; color: var(--ink); font-family: Arial, sans-serif; }
+        main { max-width: 1050px; margin: 34px auto; padding: 0 18px 40px; }
+        header { background: linear-gradient(120deg, #075e42, #15976b); color: white; padding: 28px; border-radius: 14px; }
+        header h1 { margin: 0 0 8px; font-size: clamp(24px, 4vw, 34px); }
+        header p { margin: 0; opacity: .92; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 18px; margin-top: 20px; align-items: start; }
+        section { background: white; padding: 22px; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 5px 18px #10251b0b; }
+        h2 { margin-top: 0; }
+        label { display: block; font-weight: bold; margin: 12px 0 6px; }
+        input, select, button { width: 100%; padding: 11px 12px; border: 1px solid #cbd8d1; border-radius: 7px; font: inherit; }
+        button { margin-top: 16px; color: white; background: var(--green); border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background: #075d3f; }
+        .error { padding: 12px; border-radius: 7px; color: #9b1c1c; background: #fff0f0; border: 1px solid #ffd1d1; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+        th, td { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: left; overflow-wrap: anywhere; }
+        th { background: #eef7f2; }
+        .result { margin-top: 18px; }
+        .hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
+        footer { margin-top: 18px; color: var(--muted); font-size: 13px; text-align: center; }
+    </style>
+</head>
+<body>
+<main>
+    <header>
+        <h1>Analizador de representación de datos</h1>
+        <p>Sistemas numéricos · Unicode · UTF-8 · Python 3.12 + Django</p>
+    </header>
+
+    {% for error in errores %}
+        <p class="error" role="alert">{{ error }}</p>
+    {% endfor %}
+
+    <div class="grid">
+        <section>
+            <h2>01. Conversor numérico</h2>
+            <p class="hint">Introduce un número y selecciona su base de origen. Se admiten valores entre 0 y 65 535.</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="convertir">
+                {{ numero_form.numero.errors }}
+                {{ numero_form.numero.label_tag }}
+                {{ numero_form.numero }}
+                {{ numero_form.base.errors }}
+                {{ numero_form.base.label_tag }}
+                {{ numero_form.base }}
+                <button type="submit">Convertir número</button>
+            </form>
+
+            {% if conversion %}
+            <div class="result">
+                <h3>Resultado de la conversión</h3>
+                <table>
+                    <tbody>
+                    <tr><th>Decimal</th><td>{{ conversion.decimal }}</td></tr>
+                    <tr><th>Binario</th><td><code>{{ conversion.binario }}</code></td></tr>
+                    <tr><th>Octal</th><td>{{ conversion.octal }}</td></tr>
+                    <tr><th>Hexadecimal</th><td>{{ conversion.hexadecimal }}</td></tr>
+                    <tr><th>Bits significativos</th><td>{{ conversion.bits_significativos }}</td></tr>
+                    <tr><th>Bytes necesarios</th><td>{{ conversion.bytes_necesarios }}</td></tr>
+                    <tr><th>Bits representados</th><td>{{ conversion.bits_representacion }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </section>
+
+        <section>
+            <h2>02. Analizador de caracteres</h2>
+            <p class="hint">Escribe un texto de hasta 20 caracteres para ver sus códigos Unicode y el tamaño UTF-8 de cada carácter.</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="analizar">
+                {{ texto_form.texto.errors }}
+                {{ texto_form.texto.label_tag }}
+                {{ texto_form.texto }}
+                <button type="submit">Analizar texto</button>
+            </form>
+
+            {% if caracteres != None %}
+            <div class="result">
+                <h3>Resultado del análisis</h3>
+                <table>
+                    <thead>
+                    <tr><th>Carácter</th><th>Decimal</th><th>Punto U+</th><th>Hex.</th><th>Bytes UTF-8</th></tr>
+                    </thead>
+                    <tbody>
+                    {% for item in caracteres %}
+                    <tr>
+                        <td>{% if item.caracter == " " %}(espacio){% else %}{{ item.caracter }}{% endif %}</td>
+                        <td>{{ item.decimal }}</td>
+                        <td>{{ item.unicode }}</td>
+                        <td>{{ item.hexadecimal }}</td>
+                        <td>{{ item.bytes_utf8 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5">No hay caracteres.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+    <footer>Analizador de representación de datos · Proyecto académico</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,8 @@
+services:
+  web:
+    build: .
+    container_name: analizador_datos
+    ports:
+      - "8000:8000"
+    mem_limit: 256m
+    cpus: 1.0
